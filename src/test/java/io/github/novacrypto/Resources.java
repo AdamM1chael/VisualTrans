@@ -19,22 +19,28 @@
  *  You can contact the authors via github issues.
  */
 
-package io.github.novacrypto.bip39;
+package io.github.novacrypto;
 
-public interface WordList {
+import com.google.gson.Gson;
 
-    /**
-     * Get a word in the word list.
-     *
-     * @param index Index of word in the word list [0..2047] inclusive.
-     * @return the word from the list.
-     */
-    String getWord(final int index);
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
-    /**
-     * Get the space character for this language.
-     *
-     * @return a whitespace character.
-     */
-    char getSpace();
+public final class Resources {
+
+    private Resources() {
+    }
+
+    public static <T> T loadJsonResource(String resourceName, Class<T> classOfT) {
+        try {
+            try (final InputStreamReader in = new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream(resourceName))) {
+                final String json = new BufferedReader(in).lines().collect(Collectors.joining("\n"));
+                return new Gson().fromJson(json, classOfT);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

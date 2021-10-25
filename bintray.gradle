@@ -19,22 +19,44 @@
  *  You can contact the authors via github issues.
  */
 
-package io.github.novacrypto.bip39;
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
 
-public interface WordList {
-
-    /**
-     * Get a word in the word list.
-     *
-     * @param index Index of word in the word list [0..2047] inclusive.
-     * @return the word from the list.
-     */
-    String getWord(final int index);
-
-    /**
-     * Get the space character for this language.
-     *
-     * @return a whitespace character.
-     */
-    char getSpace();
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId group
+            artifactId project.name
+            version project.version
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
+check.dependsOn jacocoTestReport

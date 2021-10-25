@@ -19,22 +19,26 @@
  *  You can contact the authors via github issues.
  */
 
-package io.github.novacrypto.bip39;
+package io.github.novacrypto.testjson;
 
-public interface WordList {
+import com.google.gson.annotations.SerializedName;
+import io.github.novacrypto.Resources;
 
-    /**
-     * Get a word in the word list.
-     *
-     * @param index Index of word in the word list [0..2047] inclusive.
-     * @return the word from the list.
-     */
-    String getWord(final int index);
+import static org.junit.Assert.assertEquals;
 
-    /**
-     * Get the space character for this language.
-     *
-     * @return a whitespace character.
-     */
-    char getSpace();
+public final class TestVectorJson {
+    @SerializedName("data")
+    public TestVector[] vectors;
+
+    public static TestVectorJson loadJapanese() {
+        final TestVectorJson data = Resources.loadJsonResource("bip39_japanese_test_vectors.json", TestVectorJson.class);
+        assertEquals(24, data.vectors.length);
+        return data;
+    }
+
+    public static TestVectorJson loadFrench() {
+        final TestVectorJson data = Resources.loadJsonResource("bip39_french_test_vectors.json", TestVectorJson.class);
+        assertEquals(18, data.vectors.length);
+        return data;
+    }
 }
